@@ -151,26 +151,22 @@ async function generatePaymentReceiptPDF(custName, chatId, amount, reaches, utr,
 
     doc.pipe(stream);
 
-    // Header Design
     doc.fillColor('#4f46e5').fontSize(22).text('JPW ENTERPRISE', { align: 'center' });
     doc.fillColor('#64748b').fontSize(10).text('Official Payment & Recharge Invoice', { align: 'center' });
     doc.moveDown(1.5);
 
-    // Invoice Meta
     doc.fillColor('#0f172a').fontSize(12).text(`Receipt Date: ${new Date().toLocaleString()}`);
     doc.text(`Customer Name: ${custName}`);
     doc.text(`Telegram Chat ID: ${chatId}`);
     doc.text(`Transaction UTR: ${utr || 'VERIFIED-UPI'}`);
     doc.moveDown(1);
 
-    // Table / Details Box
     doc.rect(50, doc.y, 500, 80).fillAndStroke('#f1f5f9', '#cbd5e1');
     doc.fillColor('#0f172a').fontSize(14).text('Purchase Summary', 65, doc.y - 65);
     doc.fontSize(11).text(`Package Reaches Credited: ${reaches} Reaches`, 65, doc.y - 35);
     doc.text(`Total Amount Paid: INR ${amount}.00`, 65, doc.y - 15);
     doc.moveDown(3);
 
-    // Footer
     doc.fillColor('#64748b').fontSize(9).text('Thank you for choosing JPW Enterprise Auto Services!', { align: 'center' });
     doc.text('This is a system-generated electronic receipt.', { align: 'center' });
 
@@ -277,7 +273,6 @@ adminBot.on('callback_query', async (query) => {
         adminBot.answerCallbackQuery(query.id);
     }
     else if (data.startsWith('appr_utr_')) {
-        // Format: appr_utr_chatId_reaches_price
         const parts = data.split('_');
         const targetChatId = parts[2];
         const reaches = parseInt(parts[3]);
@@ -292,7 +287,6 @@ adminBot.on('callback_query', async (query) => {
                 chat_id: DEFAULT_ADMIN_CHAT_ID, message_id: query.message.message_id, parse_mode: 'Markdown'
             });
 
-            // Generate PDF Receipt and send to Customer
             generatePaymentReceiptPDF(user.firstName, targetChatId, price, reaches, 'VERIFIED-UPI', async (pdfPath) => {
                 const primaryBot = customerBots[0] || adminBot;
                 try {
@@ -564,7 +558,6 @@ CUSTOMER_BOT_TOKENS.forEach(token => {
 
         if (/^\d{12}$/.test(text.trim())) {
             const utr = text.trim();
-            // Check if user has active package amount intent or default
             await adminBot.sendMessage(DEFAULT_ADMIN_CHAT_ID, `💳 **NEW UTR SUBMITTED FOR APPROVAL**\n👤 Customer: ${user.firstName} (\`${chatId}\`)\n🔢 UTR: \`${utr}\``, {
                 parse_mode: 'Markdown',
                 reply_markup: {
@@ -629,7 +622,7 @@ CUSTOMER_BOT_TOKENS.forEach(token => {
     customerBots.push(cBot);
 });
 
-// --- SUPER ADMIN PANEL (WITH INSTANT BACKUP & REPORT BUTTON) ---
+// --- SUPER ADMIN PANEL ---
 adminBot.onText(/\/start|\/admin/, async (msg) => {
     const chatId = String(msg.chat.id);
     let user = await UserModel.findOne({ chatId });
