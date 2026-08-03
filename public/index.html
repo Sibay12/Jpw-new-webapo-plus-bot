@@ -31,9 +31,6 @@
         .timer-display { font-size: 32px; font-weight: 800; font-family: monospace; color: #38bdf8; letter-spacing: 2px; margin: 8px 0; }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #3b82f6; color: #fff; }
 
-        .lang-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 12px; }
-        .lang-btn { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; }
-
         .hidden { display: none !important; }
         .footer-support { margin-top: 20px; text-align: center; border-top: 1px solid #1e293b; padding-top: 15px; }
     </style>
@@ -41,13 +38,6 @@
 <body>
 
 <div class="container">
-
-    <!-- LANGUAGE SWITCHER BAR -->
-    <div class="lang-bar">
-        <button class="lang-btn" onclick="setAppLang('HI')">🇮🇳 हिंदी</button>
-        <button class="lang-btn" onclick="setAppLang('EN')">🇬🇧 English</button>
-        <button class="lang-btn" onclick="setAppLang('HINGLISH')">🇮🇳🇬🇧 Hinglish</button>
-    </div>
 
     <!-- 1. SUPER ADMIN STATION -->
     <div id="view-admin" class="card hidden">
@@ -133,7 +123,7 @@
         fetch(`/api/user-role/${chatId}`)
             .then(res => res.json())
             .then(data => {
-                if (data.role === 'admin') {
+                if (data.role === 'admin' || data.isSuperAdmin) {
                     document.getElementById('view-admin').classList.remove('hidden');
                 } else if (data.role === 'reseller') {
                     document.getElementById('view-reseller').classList.remove('hidden');
@@ -148,10 +138,6 @@
                 }
             });
     });
-
-    function setAppLang(lang) {
-        alert("Language switched to: " + lang);
-    }
 
     function saveResellerConfig() {
         const tg = window.Telegram.WebApp;
