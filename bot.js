@@ -748,6 +748,6 @@ app.get('/api/user-role/:chatId', async (req, res) => {
     }
 });
 
-app.listen(PORT, '0.0.0.0', async () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Master SaaS Engine Live on Port ${PORT}`);
 });
